@@ -1,60 +1,82 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 
 ## Loading and preprocessing the data
-```{r echo=TRUE}
+
+```r
 dat <- read.csv("activity.csv", header = TRUE)
 dat$date <- as.Date(dat$date,"%Y-%m-%d")
 head(dat)
+```
 
+```
+##   steps       date interval
+## 1    NA 2012-10-01        0
+## 2    NA 2012-10-01        5
+## 3    NA 2012-10-01       10
+## 4    NA 2012-10-01       15
+## 5    NA 2012-10-01       20
+## 6    NA 2012-10-01       25
 ```
 
 
 ## What is mean total number of steps taken per day?
-```{r echo=TRUE}
+
+```r
 agg <- aggregate(steps ~ date, data = dat, sum, na.rm = TRUE)
 with(dat, hist(agg$steps, col = "blue", main = "Total steps each day", xlab = "day"))
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
 calculating the mean and median
 
 mean
 
-```{r echo=TRUE}
-mean(agg$steps)
 
+```r
+mean(agg$steps)
+```
+
+```
+## [1] 10766.19
 ```
 
 median
 
-```{r echo=TRUE}
-median(agg$steps)
 
+```r
+median(agg$steps)
+```
+
+```
+## [1] 10765
 ```
 
 ## What is the average daily activity pattern?
-```{r echo=TRUE}
+
+```r
 x <- tapply(dat$steps,dat$interval, mean ,na.rm = TRUE)
 plot(row.names(x),x, type ="l",xlab = "5_min interval", 
     ylab = "Average across all days", main = "average of steps ")
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png) 
 
 
 ## Imputing missing values
 number of missing values
-```{r echo=TRUE}
-sum(is.na(dat))
 
+```r
+sum(is.na(dat))
+```
+
+```
+## [1] 2304
 ```
 
 filling in missing values
-```{r echo=TRUE}
+
+```r
 Stepavg <- aggregate(steps ~ interval, data = dat, FUN = mean)
 fill <- numeric()
 for (i in 1:nrow(dat)) {
@@ -69,7 +91,8 @@ for (i in 1:nrow(dat)) {
 ```
 Creating a new dataset 
 
-```{r echo=TRUE}
+
+```r
 dat2 <- dat
 dat2$steps <- fill
 ```
@@ -77,30 +100,42 @@ dat2$steps <- fill
 
 the new histogram
 
-```{r echo=TRUE}
+
+```r
 agg2 <- aggregate(steps ~ date, data = dat2, sum, na.rm = TRUE)
 with(dat2, hist(agg2$steps, col = "green", main = "Total steps each day", xlab = "day"))
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-9-1.png) 
+
 
 mean of the new data
  
-```{r echo=TRUE}
-mean(agg2$steps) 
 
+```r
+mean(agg2$steps) 
+```
+
+```
+## [1] 10766.19
 ```
 
 median of the new data
 
-```{r echo=TRUE}
-median(agg2$steps)
 
+```r
+median(agg2$steps)
+```
+
+```
+## [1] 10766.19
 ```
 
 ## Are there differences in activity patterns between weekdays and weekends?
 Creating of new factor variable with two levels weekday and weekend .
 
-```{r echo=TRUE}
+
+```r
 day <- weekdays(dat2$date)
 daylevel <- vector()
 for (i in 1:nrow(dat2)) {
@@ -122,8 +157,11 @@ names(agg3) <- c("interval", "daylevel", "steps")
 the plot showing diffrence of patterns   
 between weekdays and weekends
 
-```{r echo=TRUE}
+
+```r
 library(lattice)
 xyplot(steps ~ interval | daylevel, agg3, type = "l", layout = c(1, 2), 
     xlab = "interval", ylab = "number of steps")
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-13-1.png) 
